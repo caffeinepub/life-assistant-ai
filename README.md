@@ -1,2 +1,3 @@
-# life-assistant-ai
-Exported from Caffeine project: Add in-app feedback/change request submission flow
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`

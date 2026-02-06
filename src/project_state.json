@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "New project",
+  "architectural_notes": [],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-add-a-simple-feedback-request-a-change-feature-that-lets-an-authenticated-user-submit-a-short-text-request-and-view-their-previously-submitted-requests",
+      "title": "Add a simple “Feedback / Request a change” feature that lets an authenticated user submit a short text request and view their previously submitted requests.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [],
+  "projectName": "Add in-app feedback/change request submission flow",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

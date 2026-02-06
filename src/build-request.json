@@ -1,0 +1,52 @@
+{
+  "kind": "build_request",
+  "title": "Add in-app feedback/change request submission flow",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Add a simple “Feedback / Request a change” feature that lets an authenticated user submit a short text request and view their previously submitted requests.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-12"
+        ],
+        "quotes": [
+          "i want to some changes  in this app"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend exposes an authenticated method to create a feedback/change request with at least: id, message text, createdAt timestamp, and a status field (e.g., open/resolved).",
+        "Backend exposes an authenticated query to list the caller’s submitted requests (most recent first).",
+        "Frontend Settings page includes a clearly labeled entry (e.g., “Feedback / Request a change”) that navigates to a new Feedback page/screen.",
+        "Feedback page contains a textarea + submit button with basic validation (non-empty, reasonable max length) and shows success/error toasts.",
+        "Feedback page displays a list of the caller’s submitted requests including created date and status.",
+        "All user-facing UI text is in English."
+      ]
+    }
+  ],
+  "constraints": [
+    "Backend must remain a single Motoko actor in backend/main.mo; only add backend/migration.mo if required for state upgrades.",
+    "Do not modify files under frontend/src/components/ui or any paths listed as immutable in SYSTEM_CONTEXT.",
+    "No third-party auth providers; authentication remains Internet Identity."
+  ],
+  "nonGoals": [
+    "Implementing external ticketing integrations (e.g., Jira, email, Slack).",
+    "Anonymous feedback submission (feature must require authentication).",
+    "Admin dashboards for managing/resolving feedback (unless already present)."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

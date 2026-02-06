@@ -1,0 +1,41 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "In-app feedback / change request submission (frontend)",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Add a Feedback page reachable from Settings where authenticated users can submit a short request and view their previously submitted requests with status and created date.",
+      "acceptanceCriteria": [
+        "Backend exposes an authenticated method to create a feedback/change request with at least: id, message text, createdAt timestamp, and a status field (e.g., open/resolved).",
+        "Backend exposes an authenticated query to list the caller’s submitted requests (most recent first).",
+        "Frontend Settings page includes a clearly labeled entry (e.g., “Feedback / Request a change”) that navigates to a new Feedback page/screen.",
+        "Feedback page contains a textarea + submit button with basic validation (non-empty, reasonable max length) and shows success/error toasts.",
+        "Feedback page displays a list of the caller’s submitted requests including created date and status.",
+        "All user-facing UI text is in English."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/Feedback/FeedbackPage.tsx",
+          "operation": "create",
+          "description": "Create a new authenticated Feedback page that: (1) loads the caller’s submitted feedback/change requests (most recent first), (2) renders a textarea + submit button, (3) validates input (non-empty, max length), (4) submits via the backend actor and shows success/error toasts, and (5) displays a list including created date and status (with a safe fallback if older type shapes are encountered during transition). Use the authorization component’s authentication expectations (Internet Identity + handling unauthorized errors) to ensure the page is only usable when logged in. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add React Query hooks to support the feedback flow: a query hook wrapping the backend capability to list the current caller’s feedback requests, and a mutation hook wrapping the backend capability to submit a new request; ensure the list query is invalidated/refetched after successful submission; handle authorization/trap errors gracefully. Use the authorization component guidance for actor-dependent query enabling and authenticated data access. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/Settings/SettingsPage.tsx",
+          "operation": "modify",
+          "description": "Add a clearly labeled Settings entry (e.g., a new Card section or an additional button alongside Safety & Privacy) titled “Feedback / Request a change” that navigates to the new Feedback page route. Keep all UI text in English. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register and wire the new Feedback page into the TanStack Router route tree (e.g., under /settings/feedback or similar) so it is navigable from Settings; ensure it remains behind the existing AuthGate (Internet Identity) behavior. Verify the component's usage instructions before implementing."
+        }
+      ]
+    }
+  ]
+}
