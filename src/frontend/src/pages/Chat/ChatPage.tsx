@@ -5,7 +5,6 @@ import { generateAssistantResponse } from '../../assistant/assistantBrain';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, Sparkles } from 'lucide-react';
 import QuickActionsBar from '../../components/chat/QuickActionsBar';
 import { FadeIn } from '../../components/animation/MicroMotion';
@@ -13,23 +12,50 @@ import { FadeIn } from '../../components/animation/MicroMotion';
 export default function ChatPage() {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const isAtBottomRef = useRef(true);
   
   const { messages, addMessage } = useChatStore();
   const { data: userProfile } = useGetCallerUserProfile();
   const { data: tasks = [] } = useGetTasks();
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  // Check if user is at bottom of scroll container
+  const checkIfAtBottom = () => {
+    const container = messagesContainerRef.current;
+    if (!container) return false;
+    
+    const threshold = 50; // pixels from bottom to consider "at bottom"
+    const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight <= threshold;
+    isAtBottomRef.current = isAtBottom;
+    return isAtBottom;
   };
 
+  // Handle scroll events to track user position
+  const handleScroll = () => {
+    checkIfAtBottom();
+  };
+
+  // Auto-scroll only when user is at bottom
   useEffect(() => {
-    scrollToBottom();
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    // Only auto-scroll if user was already at bottom
+    if (isAtBottomRef.current) {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
   }, [messages]);
 
   const handleSend = async (text?: string) => {
     const messageText = text || input.trim();
     if (!messageText) return;
+
+    // User is sending a message, so they want to see the response
+    // Mark as "at bottom" to enable auto-scroll for the response
+    isAtBottomRef.current = true;
 
     addMessage({ role: 'user', content: messageText });
     setInput('');
@@ -64,8 +90,13 @@ export default function ChatPage() {
         </div>
       </FadeIn>
 
-      <Card className="flex-1 flex flex-col overflow-hidden">
-        <ScrollArea className="flex-1 p-4">
+      <Card className="flex-1 flex flex-col min-h-0">
+        {/* Fixed-height scrollable message container */}
+        <div 
+          ref={messagesContainerRef}
+          onScroll={handleScroll}
+          className="flex-1 min-h-0 overflow-y-auto p-4"
+        >
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center p-8">
               <Sparkles className="h-16 w-16 text-amber-500 mb-4" />
@@ -105,11 +136,11 @@ export default function ChatPage() {
                   </div>
                 </div>
               )}
-              <div ref={messagesEndRef} />
             </div>
           )}
-        </ScrollArea>
+        </div>
 
+        {/* Fixed input area at bottom */}
         <div className="border-t border-border p-4 space-y-3">
           <QuickActionsBar onActionClick={handleSend} />
           

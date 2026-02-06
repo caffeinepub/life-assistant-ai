@@ -1,52 +1,93 @@
 {
   "kind": "build_request",
-  "title": "Add in-app feedback/change request submission flow",
-  "priority": "normal",
+  "title": "Fix chat scroll jump/lock by replacing ScrollArea with fixed-height overflow container and bottom-aware auto-scroll",
+  "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Add a simple “Feedback / Request a change” feature that lets an authenticated user submit a short text request and view their previously submitted requests.",
-      "target": "both",
+      "text": "Replace the current chat message scroller implementation in `frontend/src/pages/Chat/ChatPage.tsx` so the message list is rendered inside a fixed-height container that uses `overflow-y: auto` and remains scrollable at all times (mobile + desktop). Do not rely on the current `ScrollArea` component for the message list if it prevents correct scroll behavior.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-12"
+          "msg-6"
         ],
         "quotes": [
-          "i want to some changes  in this app"
+          "The chat message list must be wrapped in a fixed-height container\n\nThe container must use overflow-y: auto (not hidden, not default)\n\nIf the current chat component cannot support this behavior, replace it with a custom chat container that does."
         ]
       },
       "acceptanceCriteria": [
-        "Backend exposes an authenticated method to create a feedback/change request with at least: id, message text, createdAt timestamp, and a status field (e.g., open/resolved).",
-        "Backend exposes an authenticated query to list the caller’s submitted requests (most recent first).",
-        "Frontend Settings page includes a clearly labeled entry (e.g., “Feedback / Request a change”) that navigates to a new Feedback page/screen.",
-        "Feedback page contains a textarea + submit button with basic validation (non-empty, reasonable max length) and shows success/error toasts.",
-        "Feedback page displays a list of the caller’s submitted requests including created date and status.",
-        "All user-facing UI text is in English."
+        "The chat messages render inside a container with a stable, fixed height relative to the page layout (no growing with content).",
+        "The message list container uses vertical scrolling (`overflow-y: auto`) and users can always scroll through history.",
+        "The chat input area remains visible and positioned at the bottom of the chat card while the message list scrolls independently.",
+        "Works on both mobile and desktop viewports."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Implement bottom-aware auto-scroll logic in `frontend/src/pages/Chat/ChatPage.tsx`: auto-scroll to the bottom ONLY when the user is already at (or near) the bottom at the moment a new message is appended. If the user scrolls up, disable auto-scroll until the user scrolls back to the bottom.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "Auto-scroll must trigger ONLY when the user is already at the bottom\n\nIf the user scrolls up, auto-scroll must be disabled"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When the user is at the bottom and a new message is added, the view scrolls to the latest message.",
+        "When the user scrolls up (not at bottom) and new messages are added, the scroll position does not jump and the user remains at the same reading position.",
+        "When the user scrolls back to the bottom, auto-scroll re-enables for subsequent new messages."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Preserve scroll position across renders and prevent scrollTop resets on new messages in `frontend/src/pages/Chat/ChatPage.tsx`. Remove/replace any logic that unconditionally forces scrolling on every `messages` change (e.g., unconditional `scrollIntoView`), and ensure adding messages does not cause page reflow or lock scrolling.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "When a new message arrives, do not reset scrollTop\n\nPreserve scroll position across renders\n\nApply the fix at logic + layout level, not visual styling only\n\nDo not reflow the entire page on new messages"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Sending a message does not cause the chat to jump upward.",
+        "Users can scroll up and continue reading older messages even while new messages arrive.",
+        "Long conversations remain smooth and readable; the scroller does not lock or become unusable."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Enable smooth scrolling using native browser behavior when auto-scroll is allowed (user is at bottom), using native scroll APIs on the scroll container (not page-level scrolling).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "Enable smooth scrolling using native browser behavior"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When auto-scroll occurs, it uses smooth native scrolling behavior.",
+        "Smooth scrolling is applied only to the chat message container (not the entire page)."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single Motoko actor in backend/main.mo; only add backend/migration.mo if required for state upgrades.",
-    "Do not modify files under frontend/src/components/ui or any paths listed as immutable in SYSTEM_CONTEXT.",
-    "No third-party auth providers; authentication remains Internet Identity."
+    "Frontend must apply the fix at logic + layout level (not styling-only).",
+    "Do not edit files under `frontend/src/components/ui` (compose/replace usage instead).",
+    "Do not implement real-time/WebSocket behavior; fix applies to current message append flow only."
   ],
   "nonGoals": [
-    "Implementing external ticketing integrations (e.g., Jira, email, Slack).",
-    "Anonymous feedback submission (feature must require authentication).",
-    "Admin dashboards for managing/resolving feedback (unless already present)."
+    "Changing the visual design/theme of the chat bubbles or overall app styling beyond what is necessary to achieve stable scrolling.",
+    "Adding new chat features (typing indicators beyond existing, message reactions, persistence, pagination, etc.).",
+    "Backend changes (Motoko) are not required for this scroll fix."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

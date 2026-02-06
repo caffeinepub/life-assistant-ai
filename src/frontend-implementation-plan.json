@@ -1,39 +1,69 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "In-app feedback / change request submission (frontend)",
+  "title": "Stabilize chat scrolling with fixed-height overflow container and bottom-aware native auto-scroll",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Add a Feedback page reachable from Settings where authenticated users can submit a short request and view their previously submitted requests with status and created date.",
+      "summary": "Replace the chat message scroller with a fixed-height, always-scrollable overflow container (no ScrollArea) while keeping the input pinned at the bottom.",
       "acceptanceCriteria": [
-        "Backend exposes an authenticated method to create a feedback/change request with at least: id, message text, createdAt timestamp, and a status field (e.g., open/resolved).",
-        "Backend exposes an authenticated query to list the caller’s submitted requests (most recent first).",
-        "Frontend Settings page includes a clearly labeled entry (e.g., “Feedback / Request a change”) that navigates to a new Feedback page/screen.",
-        "Feedback page contains a textarea + submit button with basic validation (non-empty, reasonable max length) and shows success/error toasts.",
-        "Feedback page displays a list of the caller’s submitted requests including created date and status.",
-        "All user-facing UI text is in English."
+        "The chat messages render inside a container with a stable, fixed height relative to the page layout (no growing with content).",
+        "The message list container uses vertical scrolling (`overflow-y: auto`) and users can always scroll through history.",
+        "The chat input area remains visible and positioned at the bottom of the chat card while the message list scrolls independently.",
+        "Works on both mobile and desktop viewports."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/Feedback/FeedbackPage.tsx",
-          "operation": "create",
-          "description": "Create a new authenticated Feedback page that: (1) loads the caller’s submitted feedback/change requests (most recent first), (2) renders a textarea + submit button, (3) validates input (non-empty, max length), (4) submits via the backend actor and shows success/error toasts, and (5) displays a list including created date and status (with a safe fallback if older type shapes are encountered during transition). Use the authorization component’s authentication expectations (Internet Identity + handling unauthorized errors) to ensure the page is only usable when logged in. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/src/pages/Chat/ChatPage.tsx",
           "operation": "modify",
-          "description": "Add React Query hooks to support the feedback flow: a query hook wrapping the backend capability to list the current caller’s feedback requests, and a mutation hook wrapping the backend capability to submit a new request; ensure the list query is invalidated/refetched after successful submission; handle authorization/trap errors gracefully. Use the authorization component guidance for actor-dependent query enabling and authenticated data access. Verify the component's usage instructions before implementing."
-        },
+          "description": "Remove usage of the current ScrollArea for the message list and render messages inside a flex child container that has stable height within the page layout (e.g., Card with `flex flex-col`, message container with `flex-1 min-h-0 overflow-y-auto`, input area below). Ensure the message container remains scrollable on both mobile and desktop without affecting page-level scroll."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Implement bottom-aware auto-scroll: only scroll when the user is already at/near bottom; disable while user scrolls up and re-enable when they return.",
+      "acceptanceCriteria": [
+        "When the user is at the bottom and a new message is added, the view scrolls to the latest message.",
+        "When the user scrolls up (not at bottom) and new messages are added, the scroll position does not jump and the user remains at the same reading position.",
+        "When the user scrolls back to the bottom, auto-scroll re-enables for subsequent new messages."
+      ],
+      "file_operations": [
         {
-          "path": "frontend/src/pages/Settings/SettingsPage.tsx",
+          "path": "frontend/src/pages/Chat/ChatPage.tsx",
           "operation": "modify",
-          "description": "Add a clearly labeled Settings entry (e.g., a new Card section or an additional button alongside Safety & Privacy) titled “Feedback / Request a change” that navigates to the new Feedback page route. Keep all UI text in English. Verify the component's usage instructions before implementing."
-        },
+          "description": "Add bottom-awareness tracking on the message scroll container (use a container ref and an onScroll handler). Maintain a ref/state flag like `isAtBottom` computed via `scrollTop + clientHeight >= scrollHeight - threshold`. On message append, only auto-scroll when `isAtBottom` is true; if the user scrolls up, keep it false until they scroll back near bottom."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Preserve scroll position across renders by removing unconditional scrolling and preventing scrollTop resets/jumps when messages change.",
+      "acceptanceCriteria": [
+        "Sending a message does not cause the chat to jump upward.",
+        "Users can scroll up and continue reading older messages even while new messages arrive.",
+        "Long conversations remain smooth and readable; the scroller does not lock or become unusable."
+      ],
+      "file_operations": [
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/pages/Chat/ChatPage.tsx",
           "operation": "modify",
-          "description": "Register and wire the new Feedback page into the TanStack Router route tree (e.g., under /settings/feedback or similar) so it is navigable from Settings; ensure it remains behind the existing AuthGate (Internet Identity) behavior. Verify the component's usage instructions before implementing."
+          "description": "Remove/replace unconditional `scrollIntoView` behavior tied to every `messages` change. Drive scrolling via the scroll container (not a sentinel div) and only when bottom-aware conditions allow it. Ensure the scroll container is stable (`min-h-0` within the flex column) so new messages do not trigger layout growth that causes page reflow or scroll locking."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Use native smooth scrolling on the chat message container when auto-scroll is permitted.",
+      "acceptanceCriteria": [
+        "When auto-scroll occurs, it uses smooth native scrolling behavior.",
+        "Smooth scrolling is applied only to the chat message container (not the entire page)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/Chat/ChatPage.tsx",
+          "operation": "modify",
+          "description": "When `isAtBottom` is true and a new message is appended, perform native container scrolling using the container ref (e.g., `element.scrollTo({ top: element.scrollHeight, behavior: 'smooth' })`). Ensure this targets only the message scroll container and does not trigger page-level scrolling."
         }
       ]
     }

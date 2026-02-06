@@ -2,21 +2,50 @@
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
   "summary": "New project",
-  "architectural_notes": [],
-  "known_issues": [],
-  "isFixRequest": false,
+  "architectural_notes": [
+    "Chat UI: message list must be in a fixed-height container with overflow-y:auto; input stays fixed at bottom; prevent full-page reflow on new messages.",
+    "Chat scrolling behavior: auto-scroll only when user is at bottom; disable auto-scroll when user scrolls up; preserve scroll position across renders; do not reset scrollTop on new messages; use native smooth scrolling."
+  ],
+  "known_issues": [
+    "Critical: Chat scroll jumps/locks on new messages; user cannot scroll up to read history; chat history becomes unreadable (mobile + desktop)."
+  ],
+  "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-add-a-simple-feedback-request-a-change-feature-that-lets-an-authenticated-user-submit-a-short-text-request-and-view-their-previously-submitted-requests",
-      "title": "Add a simple “Feedback / Request a change” feature that lets an authenticated user submit a short text request and view their previously submitted requests.",
+      "id": "feature-replace-the-current-chat-message-scroller-implementation-in-frontend-src-pages-chat-chatpage-tsx-so-the-message-list-is-rendered-inside-a-fixed-height-container-that-uses-overflow-y-auto-and-remains-scrollable-at-all-times-mobile-desktop-do-not-rely-on-the-current-scrollarea-component-for-the-message-list-if-it-prevents-correct-scroll-behavior",
+      "title": "Replace the current chat message scroller implementation in `frontend/src/pages/Chat/ChatPage.tsx` so the message list is rendered inside a fixed-height container that uses `overflow-y: auto` and remains scrollable at all times (mobile + desktop). Do not rely on the current `ScrollArea` component for the message list if it prevents correct scroll behavior.",
       "reqIds": [
         "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-bottom-aware-auto-scroll-logic-in-frontend-src-pages-chat-chatpage-tsx-auto-scroll-to-the-bottom-only-when-the-user-is-already-at-or-near-the-bottom-at-the-moment-a-new-message-is-appended-if-the-user-scrolls-up-disable-auto-scroll-until-the-user-scrolls-back-to-the-bottom",
+      "title": "Implement bottom-aware auto-scroll logic in `frontend/src/pages/Chat/ChatPage.tsx`: auto-scroll to the bottom ONLY when the user is already at (or near) the bottom at the moment a new message is appended. If the user scrolls up, disable auto-scroll until the user scrolls back to the bottom.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-preserve-scroll-position-across-renders-and-prevent-scrolltop-resets-on-new-messages-in-frontend-src-pages-chat-chatpage-tsx-remove-replace-any-logic-that-unconditionally-forces-scrolling-on-every-messages-change-e-g-unconditional-scrollintoview-and-ensure-adding-messages-does-not-cause-page-reflow-or-lock-scrolling",
+      "title": "Preserve scroll position across renders and prevent scrollTop resets on new messages in `frontend/src/pages/Chat/ChatPage.tsx`. Remove/replace any logic that unconditionally forces scrolling on every `messages` change (e.g., unconditional `scrollIntoView`), and ensure adding messages does not cause page reflow or lock scrolling.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-enable-smooth-scrolling-using-native-browser-behavior-when-auto-scroll-is-allowed-user-is-at-bottom-using-native-scroll-apis-on-the-scroll-container-not-page-level-scrolling",
+      "title": "Enable smooth scrolling using native browser behavior when auto-scroll is allowed (user is at bottom), using native scroll APIs on the scroll container (not page-level scrolling).",
+      "reqIds": [
+        "REQ-4"
       ],
       "version": 1
     }
   ],
   "new_feature_requests": [],
-  "projectName": "Add in-app feedback/change request submission flow",
+  "projectName": "Fix chat scroll jump/lock by replacing ScrollArea with fixed-height overflow container and bottom-aware auto-scroll",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

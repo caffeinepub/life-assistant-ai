@@ -2,13 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-a-simple-feedback-request-a-change-feature-that-lets-an-authenticated-user-submit-a-short-text-request-and-view-their-previously-submitted-requests",
-      "featureTitle": "Add a simple “Feedback / Request a change” feature that lets an authenticated user submit a short text request and view their previously submitted requests.",
+      "featureId": "feature-replace-the-current-chat-message-scroller-implementation-in-frontend-src-pages-chat-chatpage-tsx-so-the-message-list-is-rendered-inside-a-fixed-height-container-that-uses-overflow-y-auto-and-remains-scrollable-at-all-times-mobile-desktop-do-not-rely-on-the-current-scrollarea-component-for-the-message-list-if-it-prevents-correct-scroll-behavior",
+      "featureTitle": "Replace the current chat message scroller implementation in `frontend/src/pages/Chat/ChatPage.tsx` so the message list is rendered inside a fixed-height container that uses `overflow-y: auto` and remains scrollable at all times (mobile + desktop). Do not rely on the current `ScrollArea` component for the message list if it prevents correct scroll behavior.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/Feedback/FeedbackPage.tsx",
-        "frontend/src/pages/Settings/SettingsPage.tsx"
+        "frontend/src/pages/Chat/ChatPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -20,6 +17,63 @@
       ],
       "testIds": [
         "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-bottom-aware-auto-scroll-logic-in-frontend-src-pages-chat-chatpage-tsx-auto-scroll-to-the-bottom-only-when-the-user-is-already-at-or-near-the-bottom-at-the-moment-a-new-message-is-appended-if-the-user-scrolls-up-disable-auto-scroll-until-the-user-scrolls-back-to-the-bottom",
+      "featureTitle": "Implement bottom-aware auto-scroll logic in `frontend/src/pages/Chat/ChatPage.tsx`: auto-scroll to the bottom ONLY when the user is already at (or near) the bottom at the moment a new message is appended. If the user scrolls up, disable auto-scroll until the user scrolls back to the bottom.",
+      "files": [
+        "frontend/src/pages/Chat/ChatPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-preserve-scroll-position-across-renders-and-prevent-scrolltop-resets-on-new-messages-in-frontend-src-pages-chat-chatpage-tsx-remove-replace-any-logic-that-unconditionally-forces-scrolling-on-every-messages-change-e-g-unconditional-scrollintoview-and-ensure-adding-messages-does-not-cause-page-reflow-or-lock-scrolling",
+      "featureTitle": "Preserve scroll position across renders and prevent scrollTop resets on new messages in `frontend/src/pages/Chat/ChatPage.tsx`. Remove/replace any logic that unconditionally forces scrolling on every `messages` change (e.g., unconditional `scrollIntoView`), and ensure adding messages does not cause page reflow or lock scrolling.",
+      "files": [
+        "frontend/src/pages/Chat/ChatPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-enable-smooth-scrolling-using-native-browser-behavior-when-auto-scroll-is-allowed-user-is-at-bottom-using-native-scroll-apis-on-the-scroll-container-not-page-level-scrolling",
+      "featureTitle": "Enable smooth scrolling using native browser behavior when auto-scroll is allowed (user is at bottom), using native scroll APIs on the scroll container (not page-level scrolling).",
+      "files": [
+        "frontend/src/pages/Chat/ChatPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
       ],
       "confidence": "high"
     }

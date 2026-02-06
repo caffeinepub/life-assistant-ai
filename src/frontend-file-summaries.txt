@@ -15,7 +15,7 @@
   "frontend/src/components/auth/LoginButton.tsx": "Internet Identity login/logout button with proper state management and cache clearing on logout.",
   "frontend/src/components/animation/MicroMotion.tsx": "Subtle fade-in and slide-in animation components with reduced-motion support for accessibility.",
   "frontend/src/pages/Onboarding/OnboardingPage.tsx": "Two-step onboarding flow collecting user role, name, schedule preferences, and goals with hero image display.",
-  "frontend/src/pages/Chat/ChatPage.tsx": "Primary chat interface with message history, typing indicators, quick action buttons, and integration with deterministic assistant brain.",
+  "frontend/src/pages/Chat/ChatPage.tsx": "Primary chat interface with fixed-height scrollable message container, bottom-aware auto-scroll that preserves user scroll position when reading history, typing indicators, quick action buttons, and integration with deterministic assistant brain.",
   "frontend/src/components/chat/QuickActionsBar.tsx": "Quick action buttons for common intents (plan day, add task, study help, mood check, breathing, hydration).",
   "frontend/src/pages/Today/TodayPage.tsx": "Task management page with add/complete functionality, day plan generator, and end-of-day summary.",
   "frontend/src/pages/Wellness/WellnessPage.tsx": "Tabbed wellness interface for tracking hydration/sleep, mood check-ins, and guided breathing exercises with disclaimers.",

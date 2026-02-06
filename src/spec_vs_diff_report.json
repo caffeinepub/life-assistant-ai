@@ -1,54 +1,23 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-06T08:05:06.246Z",
-  "summary": "REQ-1 is partially implemented: a new Feedback page and route exist, Settings navigation appears to be added, and the backend includes authenticated submit/list methods. However, the backend data model and APIs do not meet the acceptance criteria requiring id/createdAt/status, and the list query is not shown to return most-recent-first.",
+  "generatedAt": "2026-02-06T08:14:27.790Z",
+  "summary": "ChatPage.tsx replaces the prior message scroller with a flex-based, fixed-height/overflow-y auto container and adds bottom-aware, smooth native auto-scroll using the container’s scrollTo API. The diff shows conditional auto-scroll (only when previously at/near bottom) and scroll position tracking via onScroll; no edits were made under frontend/src/components/ui.",
   "missing_requirements": [
     {
       "id": "REQ-1",
-      "requirement": "Backend create method must store/return a feedback/change request with at least: id, message text, createdAt timestamp, and a status field (e.g., open/resolved).",
-      "reason": "Backend FeedbackRequest type only contains text and timestamp; there is no id field, no createdAt field named as such, and no status field. The submit method also returns async () rather than returning the created object.",
+      "requirement": "The chat input area remains visible and positioned at the bottom of the chat card while the message list scrolls independently.",
+      "reason": "The diff is truncated before the input area JSX/layout is shown, so it cannot be verified from the provided evidence that the input remains pinned at the bottom while only the message list scrolls.",
       "evidence": [
-        "backend/main.mo",
-        "backend/migration.mo"
-      ]
-    },
-    {
-      "id": "REQ-1",
-      "requirement": "Backend exposes an authenticated query to list the caller’s submitted requests (most recent first).",
-      "reason": "The backend query returns the stored array as-is without any sorting/reversal; ordering is not guaranteed to be most-recent-first in the backend implementation shown (frontend sorts client-side, but AC requires the backend query to return most recent first).",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-1",
-      "requirement": "Feedback page displays a list of the caller’s submitted requests including created date and status.",
-      "reason": "Frontend request objects appear to contain only timestamp (used for date formatting) and no status field is evident; the backend model also has no status field, so the UI cannot reliably display status as required.",
-      "evidence": [
-        "frontend/src/pages/Feedback/FeedbackPage.tsx",
-        "backend/main.mo"
+        "frontend/src/pages/Chat/ChatPage.tsx (truncated)"
       ]
     }
   ],
-  "hallucinated_features": [
-    {
-      "description": "Added a backend migration module that introduces feedbackRequests state with a simplified schema (text/timestamp) and performs an upgrade transformation.",
-      "reason": "REQ-1 did not explicitly require a state migration or specify a storage schema change; while migrations are allowed if required, this specific migration and schema are additional implementation beyond the stated requirements.",
-      "evidence": [
-        "backend/migration.mo"
-      ]
-    }
-  ],
-  "confidence": 0.74,
+  "hallucinated_features": [],
+  "confidence": 0.72,
   "changed_files": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/App.tsx",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/Feedback/FeedbackPage.tsx",
-    "frontend/src/pages/Settings/SettingsPage.tsx",
+    "frontend/src/pages/Chat/ChatPage.tsx",
     "project_state.json"
   ]
 }
